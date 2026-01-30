@@ -215,13 +215,13 @@ const Hero = () => {
           ref={titleRef}
           className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-normal text-white mb-4 perspective-1000"
         >
-          cacao。
+          cacao
         </h1>
         <p
           ref={subtitleRef}
           className="text-lg sm:text-xl md:text-2xl text-white/80 font-mono tracking-wider"
         >
-          coder/摄影师
+          摄影师/Agent Coder
         </p>
       </div>
 

@@ -73,7 +73,7 @@ const Navigation = () => {
               className="text-xl font-medium text-white hover:scale-105 transition-transform duration-300"
               style={{ transitionTimingFunction: 'var(--ease-elastic)' }}
             >
-              cacao。
+              cacao
             </button>
 
             {/* Desktop Navigation */}
