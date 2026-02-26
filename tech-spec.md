@@ -187,13 +187,7 @@ colors: {
 /* 引入字体 */
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
 
-/* Satoshi 字体通过本地文件引入 */
-@font-face {
-  font-family: 'Satoshi';
-  src: url('https://cdn.prod.website-files.com/66e48660d77e9d055055f527/66e48a5a3fadec0734054769_Satoshi-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-}
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap');
 ```
 
 ## 响应式断点
