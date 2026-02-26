@@ -140,6 +140,24 @@ npm run build
 npm run preview
 ```
 
+### 常见问题：esbuild 版本不匹配
+
+如果 `npm run preview` 报错（Host version 与 binary version 不一致），通常是本地依赖安装状态异常导致。
+
+优先执行：
+
+```bash
+cd app
+npm ci
+```
+
+如仍未解决，可再尝试：
+
+```bash
+cd app
+npm rebuild esbuild
+```
+
 ## 依赖安装
 
 ```bash

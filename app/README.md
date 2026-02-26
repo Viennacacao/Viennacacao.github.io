@@ -66,6 +66,30 @@ npm run build
 npm run preview
 ```
 
+## 常见问题
+
+### npm run preview 报 esbuild 版本不匹配
+
+如果出现类似错误：
+
+```text
+Cannot start service: Host version "x.y.z" does not match binary version "x.y.z"
+```
+
+按以下方式修复：
+
+```bash
+cd app
+npm ci
+```
+
+如仍未解决，可尝试：
+
+```bash
+cd app
+npm rebuild esbuild
+```
+
 ## 相关文档
 
 - 技术规范与动画规划：根目录 [tech-spec.md](../tech-spec.md)
