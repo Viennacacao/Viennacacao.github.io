@@ -48,8 +48,10 @@
 
 ## 项目结构
 
+> 实际代码位于 `app/` 目录，下方结构以 `app/` 为根路径。
+
 ```
-/mnt/okcomputer/output/app/
+app/
 ├── public/
 │   └── images/          # 静态图片资源
 ├── src/
@@ -58,24 +60,69 @@
 │   │   ├── Navigation.tsx
 │   │   ├── Hero.tsx
 │   │   ├── Portfolio.tsx
-│   │   ├── PortfolioCard.tsx
+│   │   ├── PortfolioDetail.tsx
+│   │   ├── Favorites.tsx
+│   │   ├── Carousel.tsx
+│   │   ├── Slideshow.tsx
+│   │   ├── Lightbox.tsx
+│   │   ├── ImageFilters.tsx
 │   │   ├── About.tsx
 │   │   ├── Contact.tsx
-│   │   ├── ScrollIndicator.tsx
-│   │   └── AnimatedText.tsx
+│   │   └── Navigation.tsx
 │   ├── hooks/
-│   │   └── useScrollPosition.ts
+│   │   └── use-mobile.ts
 │   ├── lib/
 │   │   └── utils.ts
 │   ├── App.tsx
 │   ├── App.css
 │   ├── main.tsx
-│   └── index.css
+│   ├── index.css
+│   └── vite-env.d.ts
 ├── index.html
 ├── package.json
+├── package-lock.json
 ├── tailwind.config.js
 ├── tsconfig.json
+├── tsconfig.app.json
+├── tsconfig.node.json
 └── vite.config.ts
+```
+
+## 安装与启动
+
+### 环境要求
+
+- Node.js 18+
+- npm 9+（或兼容的包管理器，如 pnpm / yarn）
+
+### 安装依赖（在 app 目录下执行）
+
+```bash
+cd app
+
+# 安装项目依赖
+npm install
+```
+
+### 开发环境启动（在 app 目录下执行）
+
+```bash
+cd app
+
+# 启动本地开发服务器（默认端口 5173）
+npm run dev
+```
+
+### 构建与预览（在 app 目录下执行）
+
+```bash
+cd app
+
+# 生产构建
+npm run build
+
+# 本地预览生产构建
+npm run preview
 ```
 
 ## 依赖安装

@@ -1,73 +1,58 @@
-# React + TypeScript + Vite
+# 摄影作品集网站 · 开发说明
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+本项目的 React 应用代码位于仓库的 `app/` 目录内，使用 **React + TypeScript + Vite** 与 **Tailwind CSS / shadcn/ui / GSAP** 搭建，配合根目录的 `tech-spec.md` 作为整体技术规范文档。
 
-Currently, two official plugins are available:
+## 项目结构（简要）
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```text
+Viennacacao.github.io/
+├── app/                 # 前端代码（Vite 项目根目录）
+│   ├── src/             # 业务代码
+│   ├── public/          # 静态资源
+│   ├── index.html
+│   └── package.json
+└── tech-spec.md         # 技术规范与动效设计文档
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+更多详细结构与动效规划见根目录的 `tech-spec.md`。
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 环境要求
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Node.js 18+
+- npm 9+（或兼容的 pnpm / yarn）
+
+## 安装依赖
+
+在仓库根目录下进入 `app` 后安装：
+
+```bash
+cd app
+npm install
 ```
+
+## 开发环境启动
+
+```bash
+cd app
+npm run dev
+```
+
+默认通过 Vite 启动开发服务器（一般为 http://localhost:5173）。
+
+## 生产构建与预览
+
+```bash
+cd app
+
+# 生产构建
+npm run build
+
+# 本地预览构建结果
+npm run preview
+```
+
+## 相关文档
+
+- 技术规范与动画规划：根目录 [tech-spec.md](../tech-spec.md)
+- Vite 官方文档：https://vite.dev/
+- React 文档：https://react.dev/
