@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "images:optimize": "node scripts/optimize-images.mjs",
+    "images:clean": "node scripts/optimize-images.mjs --clean",
+    "images:rebuild": "node scripts/optimize-images.mjs --clean --force",
     "dev": "npm run images:optimize && vite",
     "build": "npm run images:optimize && tsc -b && vite build",
     "lint": "eslint .",

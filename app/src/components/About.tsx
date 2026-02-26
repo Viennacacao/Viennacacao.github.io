@@ -143,11 +143,11 @@ const About = () => {
     }
   };
 
-  const bioText = `我是一名摄影师和网页设计师，热衷于创造视觉上引人入胜的体验。我的作品专注于在数字领域捕捉日常生活的精髓。
+  const bioText = `我是一名摄影师和AI工程师，热衷于创造视觉上引人入胜的体验。我的作品专注于在数字领域捕捉日常生活的精髓。
 
 我相信每一个瞬间都蕴含着独特的故事，而摄影正是讲述这些故事的最佳媒介。从城市建筑的几何之美到自然风光的宁静壮阔，从光影交错的戏剧性到生活片段的真实情感，我试图通过镜头捕捉那些容易被忽视却值得铭记的画面。
 
-多年来，我游历世界各地，用相机记录下无数动人的瞬间。我的作品曾在多个国际摄影展览中展出，并获得了业界的认可。但对我而言，最大的满足来自于能够通过影像与观者产生共鸣，唤起他们对生活的热爱与思考。`;
+多年来，我游历世界各地，用相机记录下无数动人的瞬间。对我而言，最大的满足来自于能够通过影像与观者产生共鸣，唤起他们对生活的热爱与思考。`;
 
   const paragraphs = bioText.split('\n\n');
 
@@ -228,7 +228,7 @@ const About = () => {
               </div>
               <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 backdrop-blur-sm">
                 <MapPin size={14} className="text-white/60" />
-                <span className="text-xs text-white/80">上海</span>
+                <span className="text-xs text-white/80">成都</span>
               </div>
             </div>
           </div>

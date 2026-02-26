@@ -47,6 +47,42 @@ npm run dev
 - 生成目录：`app/public/images/optimized/`（不提交到 Git）
 - 生成内容：WebP + 多尺寸（供 `<picture>` + `srcset/sizes` 使用）
 
+### 更换图片后如何生效
+
+页面实际使用的是 `app/public/images/optimized/` 下生成的文件，因此只修改 `app/dist/` 里的图片不会生效。
+
+当你替换了 `app/public/images/*.jpg/png`（文件名不变）后，执行：
+
+```bash
+cd app
+touch public/images/avatar.jpg
+rm -f public/images/optimized/avatar-*.webp public/images/optimized/avatar-*.jpg public/images/optimized/avatar-*.png
+npm run images:optimize
+```
+
+如需同步到生产构建再执行：
+
+```bash
+cd app
+npm run build
+```
+
+如果浏览器仍显示旧图，做一次硬刷新（Cmd+Shift+R / Ctrl+Shift+R）。
+
+当你批量替换/删除了很多图片时，推荐直接全量重建 optimized：
+
+```bash
+cd app
+npm run images:rebuild
+```
+
+如果只是删除了图片文件，希望把已生成但不再需要的 optimized 一并清理，可执行：
+
+```bash
+cd app
+npm run images:optimize
+```
+
 如需手动生成（新增/替换图片后可执行一次）：
 
 ```bash

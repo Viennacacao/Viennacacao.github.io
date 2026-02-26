@@ -6,6 +6,8 @@ const inputDir = path.resolve(process.cwd(), 'public/images')
 const outputDir = path.resolve(process.cwd(), 'public/images/optimized')
 
 const widths = [96, 128, 160, 256, 320, 384, 480, 512, 640, 768, 960, 1024, 1280, 1600, 1920, 2560]
+const widthSet = new Set(widths)
+const rasterExts = ['jpg', 'jpeg', 'png']
 
 async function fileExists(filePath) {
   try {
@@ -29,9 +31,41 @@ function getBaseName(filename) {
   return { name: filename.slice(0, -ext.length), ext: ext.slice(1).toLowerCase() }
 }
 
-async function optimizeOne(file) {
+function parseOptimizedFilename(file) {
+  const match = file.match(/^(.*)-(\d+)\.(webp|jpg|png)$/i)
+  if (!match) return null
+  const baseName = match[1]
+  const width = Number(match[2])
+  const ext = match[3].toLowerCase()
+  if (!widthSet.has(width)) return null
+  return { baseName, width, ext }
+}
+
+async function cleanupStaleOutputs() {
+  let entries
+  try {
+    entries = await fs.readdir(outputDir)
+  } catch {
+    return
+  }
+
+  await Promise.all(
+    entries.map(async (file) => {
+      const parsed = parseOptimizedFilename(file)
+      if (!parsed) return
+      const sourceChecks = await Promise.all(
+        rasterExts.map((ext) => fileExists(path.join(inputDir, `${parsed.baseName}.${ext}`)))
+      )
+      const hasSource = sourceChecks.some(Boolean)
+      if (hasSource) return
+      await fs.rm(path.join(outputDir, file), { force: true })
+    })
+  )
+}
+
+async function optimizeOne({ file, force }) {
   const { name, ext } = getBaseName(file)
-  if (!['jpg', 'jpeg', 'png'].includes(ext)) return
+  if (!rasterExts.includes(ext)) return
   if (file.startsWith('optimized/')) return
 
   const inputPath = path.join(inputDir, file)
@@ -42,8 +76,10 @@ async function optimizeOne(file) {
     path.join(outputDir, `${name}-${w}.${outExt}`),
   ])
 
-  const skip = await shouldSkip(inputPath, outputPaths)
-  if (skip) return
+  if (!force) {
+    const skip = await shouldSkip(inputPath, outputPaths)
+    if (skip) return
+  }
 
   const inputBuffer = await fs.readFile(inputPath)
   const base = sharp(inputBuffer, { failOnError: false })
@@ -84,10 +120,22 @@ async function runPool(items, worker, concurrency) {
 }
 
 async function main() {
+  const args = new Set(process.argv.slice(2))
+  const clean = args.has('--clean')
+  const force = args.has('--force')
+
+  if (clean) {
+    await fs.rm(outputDir, { recursive: true, force: true })
+  }
+
   await fs.mkdir(outputDir, { recursive: true })
+  await cleanupStaleOutputs()
   const entries = await fs.readdir(inputDir)
-  await runPool(entries, optimizeOne, 4)
+  await runPool(
+    entries.map((file) => ({ file, force })),
+    optimizeOne,
+    4
+  )
 }
 
 await main()
-

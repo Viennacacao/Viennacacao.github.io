@@ -103,6 +103,35 @@ app/
 - 生成目录：`app/public/images/optimized/`（已加入 `.gitignore`，不提交）
 - 生成内容：`{name}-{width}.webp` 与 `{name}-{width}.jpg/png`，供 `<picture>` + `srcset/sizes` 使用
 
+#### 更换图片后的重新生成与刷新
+
+如果你替换了 `app/public/images/*.jpg/png` 的内容但文件名不变（例如 `avatar.jpg`），需要重新生成对应的优化图片；只修改 `app/dist/` 属于修改构建产物，不会影响生成结果与页面引用。
+
+推荐流程：
+
+```bash
+cd app
+touch public/images/avatar.jpg
+rm -f public/images/optimized/avatar-*.webp public/images/optimized/avatar-*.jpg public/images/optimized/avatar-*.png
+npm run images:optimize
+```
+
+如需更新生产构建：
+
+```bash
+cd app
+npm run build
+```
+
+浏览器若仍显示旧图，执行硬刷新（Cmd+Shift+R / Ctrl+Shift+R）。
+
+如果你批量替换/删除了很多图片，推荐直接全量重建 optimized：
+
+```bash
+cd app
+npm run images:rebuild
+```
+
 手动生成：
 
 ```bash
