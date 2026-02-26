@@ -95,6 +95,21 @@ app/
 - Node.js 18+
 - npm 9+（或兼容的包管理器，如 pnpm / yarn）
 
+### 图片优化（本地生成）
+
+本项目继续使用本地图片（`app/public/images`），但会在开发/构建前自动生成优化版本（WebP + 多尺寸）以提升加载速度与响应式体验。
+
+- 原图目录：`app/public/images/`
+- 生成目录：`app/public/images/optimized/`（已加入 `.gitignore`，不提交）
+- 生成内容：`{name}-{width}.webp` 与 `{name}-{width}.jpg/png`，供 `<picture>` + `srcset/sizes` 使用
+
+手动生成：
+
+```bash
+cd app
+npm run images:optimize
+```
+
 ### 安装依赖（在 app 目录下执行）
 
 ```bash
@@ -173,6 +188,8 @@ colors: {
 ## 性能优化
 
 - 使用 `will-change` 优化动画元素
-- 图片懒加载
+- 图片懒加载 + 异步解码（`loading="lazy"` / `decoding="async"`）
+- 首屏图片高优先级与预加载（`fetchpriority="high"` + preload）
+- 响应式图片（`<picture>` + `srcset/sizes`，按屏幕下发合适尺寸）
 - CSS `contain` 属性隔离动画区域
 - 尊重 `prefers-reduced-motion`

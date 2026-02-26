@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import gsap from 'gsap';
+import { getImageLoadingProps, getOptimizedImageSources } from '../lib/image';
 
 interface CarouselProps {
   images: string[];
@@ -114,18 +115,6 @@ const Carousel = ({
     });
   }, []);
 
-  // Reset when images change
-  useEffect(() => {
-    setCurrentIndex(0);
-    slidesRef.current.forEach((slide, index) => {
-      if (slide) {
-        gsap.set(slide, {
-          x: index === 0 ? '0%' : '100%',
-          opacity: index === 0 ? 1 : 0,
-        });
-      }
-    });
-  }, [images]);
 
   return (
     <div
@@ -146,11 +135,27 @@ const Carousel = ({
             onClick={() => onImageClick?.(index)}
             style={{ cursor: onImageClick ? 'pointer' : 'default' }}
           >
-            <img
-              src={image}
-              alt={`Slide ${index + 1}`}
-              className="w-full h-full object-cover"
-            />
+            {(() => {
+              const { sources, imgSrc } = getOptimizedImageSources({
+                src: image,
+                sizes: '(max-width: 768px) 100vw, 50vw',
+                widths: [480, 768, 1024, 1280, 1600],
+              });
+              const loadingProps = getImageLoadingProps({ priority: index === 0 });
+              return (
+                <picture>
+                  {sources.map((s) => (
+                    <source key={s.type} type={s.type} srcSet={s.srcSet} sizes={s.sizes} />
+                  ))}
+                  <img
+                    src={imgSrc}
+                    alt={`Slide ${index + 1}`}
+                    className="w-full h-full object-cover"
+                    {...loadingProps}
+                  />
+                </picture>
+              );
+            })()}
             {/* Hover overlay */}
             {onImageClick && (
               <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">

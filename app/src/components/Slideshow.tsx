@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { X, Play, Pause, ChevronLeft, ChevronRight, Settings } from 'lucide-react';
 import gsap from 'gsap';
+import { getImageLoadingProps, getOptimizedImageSources } from '../lib/image';
 
 interface SlideshowProps {
   images: string[];
@@ -231,11 +232,27 @@ const Slideshow = ({
 
         {/* Image */}
         <div className="slideshow-slide relative max-w-[90vw] max-h-[85vh]">
-          <img
-            src={images[currentIndex]}
-            alt={`Slide ${currentIndex + 1}`}
-            className="max-w-full max-h-[85vh] object-contain"
-          />
+          {(() => {
+            const { sources, imgSrc } = getOptimizedImageSources({
+              src: images[currentIndex],
+              sizes: '100vw',
+              widths: [640, 960, 1280, 1600, 1920],
+            });
+            const loadingProps = getImageLoadingProps({ priority: true });
+            return (
+              <picture>
+                {sources.map((s) => (
+                  <source key={s.type} type={s.type} srcSet={s.srcSet} sizes={s.sizes} />
+                ))}
+                <img
+                  src={imgSrc}
+                  alt={`Slide ${currentIndex + 1}`}
+                  className="max-w-full max-h-[85vh] object-contain"
+                  {...loadingProps}
+                />
+              </picture>
+            );
+          })()}
         </div>
 
         <button
@@ -266,11 +283,27 @@ const Slideshow = ({
                 : 'opacity-50 hover:opacity-80'
             }`}
           >
-            <img
-              src={img}
-              alt={`Thumbnail ${index + 1}`}
-              className="w-full h-full object-cover"
-            />
+            {(() => {
+              const { sources, imgSrc } = getOptimizedImageSources({
+                src: img,
+                sizes: '(max-width: 640px) 48px, 56px',
+                widths: [96, 128, 160],
+              });
+              const loadingProps = getImageLoadingProps({ priority: index === currentIndex });
+              return (
+                <picture>
+                  {sources.map((s) => (
+                    <source key={s.type} type={s.type} srcSet={s.srcSet} sizes={s.sizes} />
+                  ))}
+                  <img
+                    src={imgSrc}
+                    alt={`Thumbnail ${index + 1}`}
+                    className="w-full h-full object-cover"
+                    {...loadingProps}
+                  />
+                </picture>
+              );
+            })()}
           </button>
         ))}
       </div>

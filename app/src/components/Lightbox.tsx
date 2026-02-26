@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { FavoriteButton } from './Favorites';
 import ImageFilters, { type FilterType, filters } from './ImageFilters';
 import Slideshow from './Slideshow';
+import { getImageLoadingProps, getOptimizedImageSources } from '../lib/image';
 
 interface LightboxProps {
   images: string[];
@@ -204,15 +205,31 @@ const Lightbox = ({
                 <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               </div>
             )}
-            <img
-              src={images[currentIndex]}
-              alt={title || `Image ${currentIndex + 1}`}
-              className={`max-w-full max-h-[70vh] object-contain rounded-lg transition-opacity duration-300 ${
-                isLoading ? 'opacity-0' : 'opacity-100'
-              }`}
-              style={currentFilterStyle}
-              onLoad={() => setIsLoading(false)}
-            />
+            {(() => {
+              const { sources, imgSrc } = getOptimizedImageSources({
+                src: images[currentIndex],
+                sizes: '100vw',
+                widths: [640, 960, 1280, 1600, 1920],
+              });
+              const loadingProps = getImageLoadingProps({ priority: true });
+              return (
+                <picture>
+                  {sources.map((s) => (
+                    <source key={s.type} type={s.type} srcSet={s.srcSet} sizes={s.sizes} />
+                  ))}
+                  <img
+                    src={imgSrc}
+                    alt={title || `Image ${currentIndex + 1}`}
+                    className={`max-w-full max-h-[70vh] object-contain rounded-lg transition-opacity duration-300 ${
+                      isLoading ? 'opacity-0' : 'opacity-100'
+                    }`}
+                    style={currentFilterStyle}
+                    onLoad={() => setIsLoading(false)}
+                    {...loadingProps}
+                  />
+                </picture>
+              );
+            })()}
 
             {/* Image info */}
             {(title || description) && (
@@ -265,11 +282,27 @@ const Lightbox = ({
                   : 'opacity-50 hover:opacity-80'
               }`}
             >
-              <img
-                src={img}
-                alt={`Thumbnail ${index + 1}`}
-                className="w-full h-full object-cover"
-              />
+              {(() => {
+                const { sources, imgSrc } = getOptimizedImageSources({
+                  src: img,
+                  sizes: '(max-width: 640px) 48px, 64px',
+                  widths: [96, 128, 160],
+                });
+                const loadingProps = getImageLoadingProps({ priority: index === currentIndex });
+                return (
+                  <picture>
+                    {sources.map((s) => (
+                      <source key={s.type} type={s.type} srcSet={s.srcSet} sizes={s.sizes} />
+                    ))}
+                    <img
+                      src={imgSrc}
+                      alt={`Thumbnail ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      {...loadingProps}
+                    />
+                  </picture>
+                );
+              })()}
             </button>
           ))}
         </div>

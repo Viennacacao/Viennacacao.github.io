@@ -2,60 +2,15 @@ import { useState, useEffect } from 'react';
 import { Heart, Trash2 } from 'lucide-react';
 import gsap from 'gsap';
 import Lightbox from './Lightbox';
+import { getImageLoadingProps, getOptimizedImageSources } from '../lib/image';
+import {
+  addToFavorites,
+  getFavorites,
+  isFavorited,
+  removeFromFavorites,
+  type FavoriteItem,
+} from '../lib/favorites';
 
-interface FavoriteItem {
-  image: string;
-  projectTitle: string;
-  category: string;
-  timestamp: number;
-}
-
-const FAVORITES_KEY = 'cacao-favorites';
-
-// Get favorites from localStorage
-export const getFavorites = (): FavoriteItem[] => {
-  try {
-    const stored = localStorage.getItem(FAVORITES_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-};
-
-// Add to favorites
-export const addToFavorites = (item: Omit<FavoriteItem, 'timestamp'>) => {
-  try {
-    const favorites = getFavorites();
-    const exists = favorites.some((f) => f.image === item.image);
-    if (!exists) {
-      favorites.push({ ...item, timestamp: Date.now() });
-      localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-    }
-    return !exists;
-  } catch {
-    return false;
-  }
-};
-
-// Remove from favorites
-export const removeFromFavorites = (image: string) => {
-  try {
-    const favorites = getFavorites();
-    const filtered = favorites.filter((f) => f.image !== image);
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(filtered));
-    return true;
-  } catch {
-    return false;
-  }
-};
-
-// Check if image is favorited
-export const isFavorited = (image: string): boolean => {
-  const favorites = getFavorites();
-  return favorites.some((f) => f.image === image);
-};
-
-// Favorite button component
 interface FavoriteButtonProps {
   image: string;
   projectTitle: string;
@@ -71,12 +26,9 @@ export const FavoriteButton = ({
   className = '',
   onToggle,
 }: FavoriteButtonProps) => {
-  const [isFav, setIsFav] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  useEffect(() => {
-    setIsFav(isFavorited(image));
-  }, [image]);
+  const isFav = isFavorited(image);
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -84,11 +36,9 @@ export const FavoriteButton = ({
 
     if (isFav) {
       removeFromFavorites(image);
-      setIsFav(false);
       onToggle?.(false);
     } else {
       addToFavorites({ image, projectTitle, category });
-      setIsFav(true);
       onToggle?.(true);
 
       // Heart animation
@@ -134,19 +84,13 @@ interface FavoritesGalleryProps {
 }
 
 const FavoritesGallery = ({ isOpen, onClose }: FavoritesGalleryProps) => {
-  const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
+  const [, setRefreshKey] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
-  useEffect(() => {
-    if (isOpen) {
-      setFavorites(getFavorites());
-    }
-  }, [isOpen]);
-
   const handleRemove = (image: string) => {
     removeFromFavorites(image);
-    setFavorites(getFavorites());
+    setRefreshKey((v) => v + 1);
   };
 
   const openLightbox = (index: number) => {
@@ -170,6 +114,7 @@ const FavoritesGallery = ({ isOpen, onClose }: FavoritesGalleryProps) => {
 
   if (!isOpen) return null;
 
+  const favorites: FavoriteItem[] = getFavorites();
   const images = favorites.map((f) => f.image);
 
   return (
@@ -206,12 +151,28 @@ const FavoritesGallery = ({ isOpen, onClose }: FavoritesGalleryProps) => {
                 key={favorite.image}
                 className="group relative aspect-square overflow-hidden rounded-lg bg-white/5"
               >
-                <img
-                  src={favorite.image}
-                  alt={favorite.projectTitle}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 cursor-pointer"
-                  onClick={() => openLightbox(index)}
-                />
+                {(() => {
+                  const { sources, imgSrc } = getOptimizedImageSources({
+                    src: favorite.image,
+                    sizes: '(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw',
+                    widths: [160, 256, 320, 480, 640],
+                  });
+                  const loadingProps = getImageLoadingProps();
+                  return (
+                    <picture>
+                      {sources.map((s) => (
+                        <source key={s.type} type={s.type} srcSet={s.srcSet} sizes={s.sizes} />
+                      ))}
+                      <img
+                        src={imgSrc}
+                        alt={favorite.projectTitle}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 cursor-pointer"
+                        onClick={() => openLightbox(index)}
+                        {...loadingProps}
+                      />
+                    </picture>
+                  );
+                })()}
                 {/* Overlay */}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors duration-300">
                   <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">

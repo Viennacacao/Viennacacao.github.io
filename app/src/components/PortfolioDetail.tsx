@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lightbox from './Lightbox';
 import Slideshow from './Slideshow';
 import FavoritesGallery, { FavoriteButton } from './Favorites';
+import { getImageLoadingProps, getOptimizedImageSources } from '../lib/image';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -285,12 +286,28 @@ const PortfolioDetail = () => {
               }`}
               onClick={() => openLightbox(index)}
             >
-              <img
-                src={image}
-                alt={`${project.title} ${index + 1}`}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                style={{ transitionTimingFunction: 'var(--ease-expo-out)' }}
-              />
+              {(() => {
+                const { sources, imgSrc } = getOptimizedImageSources({
+                  src: image,
+                  sizes: '(max-width: 768px) 50vw, 33vw',
+                  widths: [320, 480, 640, 960, 1280],
+                });
+                const loadingProps = getImageLoadingProps();
+                return (
+                  <picture>
+                    {sources.map((s) => (
+                      <source key={s.type} type={s.type} srcSet={s.srcSet} sizes={s.sizes} />
+                    ))}
+                    <img
+                      src={imgSrc}
+                      alt={`${project.title} ${index + 1}`}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      style={{ transitionTimingFunction: 'var(--ease-expo-out)' }}
+                      {...loadingProps}
+                    />
+                  </picture>
+                );
+              })()}
               {/* Overlay */}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors duration-300">
                 {/* Favorite button */}

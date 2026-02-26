@@ -39,6 +39,21 @@ npm run dev
 
 默认通过 Vite 启动开发服务器（一般为 http://localhost:5173）。
 
+## 图片优化（本地生成）
+
+为了提升加载速度，本项目会在启动开发环境与构建前自动生成优化图片：
+
+- 原图目录：`app/public/images/`
+- 生成目录：`app/public/images/optimized/`（不提交到 Git）
+- 生成内容：WebP + 多尺寸（供 `<picture>` + `srcset/sizes` 使用）
+
+如需手动生成（新增/替换图片后可执行一次）：
+
+```bash
+cd app
+npm run images:optimize
+```
+
 ## 生产构建与预览
 
 ```bash

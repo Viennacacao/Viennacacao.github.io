@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { getImageLoadingProps, getOptimizedImageSources } from '../lib/image';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -200,11 +201,27 @@ const Hero = () => {
         className="absolute inset-0 w-full h-full will-change-transform"
         style={{ opacity: 1 }}
       >
-        <img
-          src="/images/hero-bg.jpg"
-          alt="Landscape"
-          className="w-full h-full object-cover"
-        />
+        {(() => {
+          const { sources, imgSrc } = getOptimizedImageSources({
+            src: '/images/hero-bg.jpg',
+            sizes: '100vw',
+            widths: [768, 1280, 1920, 2560],
+          });
+          const loadingProps = getImageLoadingProps({ priority: true });
+          return (
+            <picture>
+              {sources.map((s) => (
+                <source key={s.type} type={s.type} srcSet={s.srcSet} sizes={s.sizes} />
+              ))}
+              <img
+                src={imgSrc}
+                alt="Landscape"
+                className="w-full h-full object-cover"
+                {...loadingProps}
+              />
+            </picture>
+          );
+        })()}
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black" />
       </div>

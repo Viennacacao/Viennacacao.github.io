@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Camera, MapPin, Sparkles } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { getImageLoadingProps, getOptimizedImageSources } from '../lib/image';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -184,11 +185,22 @@ const About = () => {
                 boxShadow: '0 0 60px rgba(255, 255, 255, 0.1)',
               }}
             >
-              <img
-                src="/images/avatar.jpg"
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
+              {(() => {
+                const { sources, imgSrc } = getOptimizedImageSources({
+                  src: '/images/avatar.jpg',
+                  sizes: '(max-width: 640px) 256px, (max-width: 1024px) 320px, 384px',
+                  widths: [256, 320, 384, 512, 640],
+                });
+                const loadingProps = getImageLoadingProps();
+                return (
+                  <picture>
+                    {sources.map((s) => (
+                      <source key={s.type} type={s.type} srcSet={s.srcSet} sizes={s.sizes} />
+                    ))}
+                    <img src={imgSrc} alt="Profile" className="w-full h-full object-cover" {...loadingProps} />
+                  </picture>
+                );
+              })()}
               {/* Border ring */}
               <div className="absolute inset-0 rounded-full border-2 border-white/20" />
               
