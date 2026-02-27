@@ -24,6 +24,7 @@ const PortfolioDetail = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'masonry'>('grid');
   const [slideshowOpen, setSlideshowOpen] = useState(false);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
+  const [thumbFitBySrc, setThumbFitBySrc] = useState<Record<string, 'cover' | 'contain'>>({});
 
   const projectId = Number(id);
   const project = Number.isFinite(projectId) ? getProjectById(projectId) : undefined;
@@ -117,6 +118,17 @@ const PortfolioDetail = () => {
   }, [lightboxOpen, slideshowOpen, favoritesOpen, lightboxIndex, project, allImages.length]);
 
   if (!project) return null;
+
+  const handleThumbLoad = (src: string) => (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    const w = img.naturalWidth;
+    const h = img.naturalHeight;
+    if (!w || !h) return;
+
+    const ratio = w / h;
+    const nextFit: 'cover' | 'contain' = ratio < 0.85 ? 'contain' : 'cover';
+    setThumbFitBySrc((prev) => (prev[src] === nextFit ? prev : { ...prev, [src]: nextFit }));
+  };
 
   const openLightbox = (index: number) => {
     setLightboxIndex(index);
@@ -251,69 +263,91 @@ const PortfolioDetail = () => {
               </div>
 
               <div
-                className={`grid gap-4 sm:gap-6 ${
+                className={
                   viewMode === 'grid'
-                    ? 'grid-cols-2 md:grid-cols-3'
-                    : 'grid-cols-2 md:grid-cols-3 auto-rows-[200px]'
-                }`}
+                    ? 'flex flex-wrap gap-4 sm:gap-6 items-start'
+                    : 'grid grid-cols-2 md:grid-cols-3 auto-rows-[200px] gap-4 sm:gap-6'
+                }
               >
                 {group.images.map((image, index) => {
                   const meta = imageMetaBySrc.get(image);
                   const globalIndex = meta?.globalIndex ?? 0;
                   const favCategory = meta ? `${project.category} / ${meta.groupTitle}` : project.category;
+                  const thumbFit = thumbFitBySrc[image] ?? 'cover';
+                  const hoverScaleClass = thumbFit === 'contain' ? '' : 'group-hover:scale-110';
+                  const isGrid = viewMode === 'grid';
 
                   return (
                     <div
                       key={image}
-                      className={`gallery-item group relative overflow-hidden rounded-lg cursor-pointer opacity-0 ${
-                        viewMode === 'masonry'
-                          ? index % 3 === 0
-                            ? 'row-span-2'
-                            : ''
-                          : 'aspect-[4/3]'
+                      className={`gallery-item group relative opacity-0 ${
+                        isGrid
+                          ? 'flex items-center'
+                          : `overflow-hidden rounded-lg cursor-pointer bg-white/5 ${
+                              index % 3 === 0 ? 'row-span-2' : ''
+                            }`
                       }`}
-                      onClick={() => openLightbox(globalIndex)}
                     >
-                      {(() => {
-                        const { sources, imgSrc } = getOptimizedImageSources({
-                          src: image,
-                          sizes: '(max-width: 768px) 50vw, 33vw',
-                          widths: [320, 480, 640, 960, 1280],
-                        });
-                        const loadingProps = getImageLoadingProps();
-                        return (
-                          <picture>
-                            {sources.map((s) => (
-                              <source key={s.type} type={s.type} srcSet={s.srcSet} sizes={s.sizes} />
-                            ))}
-                            <img
-                              src={imgSrc}
-                              alt={`${project.title} ${group.title} ${index + 1}`}
-                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                              style={{ transitionTimingFunction: 'var(--ease-expo-out)' }}
-                              {...loadingProps}
+                      <div
+                        className={`relative overflow-hidden rounded-lg ${
+                          isGrid
+                            ? `inline-block h-[220px] sm:h-[260px] lg:h-[300px] max-w-full ${
+                                thumbFit === 'cover' ? 'aspect-[4/3]' : ''
+                              }`
+                            : 'w-full h-full'
+                        } ${isGrid ? 'cursor-pointer bg-black' : ''}`}
+                        onClick={() => openLightbox(globalIndex)}
+                      >
+                        {(() => {
+                          const { sources, imgSrc } = getOptimizedImageSources({
+                            src: image,
+                            sizes: '(max-width: 768px) 50vw, 33vw',
+                            widths: [320, 480, 640, 960, 1280],
+                          });
+                          const loadingProps = getImageLoadingProps();
+                          const imageClassName = isGrid
+                            ? thumbFit === 'contain'
+                              ? 'h-full w-auto max-w-full object-contain'
+                              : 'w-full h-full object-cover'
+                            : `w-full h-full transition-transform duration-500 ${hoverScaleClass} ${
+                                thumbFit === 'contain' ? 'object-contain' : 'object-cover'
+                              }`;
+
+                          return (
+                            <picture>
+                              {sources.map((s) => (
+                                <source key={s.type} type={s.type} srcSet={s.srcSet} sizes={s.sizes} />
+                              ))}
+                              <img
+                                src={imgSrc}
+                                alt={`${project.title} ${group.title} ${index + 1}`}
+                                className={imageClassName}
+                                style={{ transitionTimingFunction: 'var(--ease-expo-out)' }}
+                                onLoad={handleThumbLoad(image)}
+                                {...loadingProps}
+                              />
+                            </picture>
+                          );
+                        })()}
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors duration-300">
+                          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <FavoriteButton
+                              image={image}
+                              projectTitle={project.title}
+                              category={favCategory}
                             />
-                          </picture>
-                        );
-                      })()}
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors duration-300">
-                        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <FavoriteButton
-                            image={image}
-                            projectTitle={project.title}
-                            category={favCategory}
-                          />
+                          </div>
+
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <span className="opacity-0 group-hover:opacity-100 text-white text-sm font-mono uppercase tracking-wider transition-opacity duration-300">
+                              查看
+                            </span>
+                          </div>
                         </div>
 
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="opacity-0 group-hover:opacity-100 text-white text-sm font-mono uppercase tracking-wider transition-opacity duration-300">
-                            查看
-                          </span>
+                        <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-xs text-white/80 font-mono opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          {index + 1}
                         </div>
-                      </div>
-
-                      <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-xs text-white/80 font-mono opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        {index + 1}
                       </div>
                     </div>
                   );

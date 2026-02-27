@@ -38,28 +38,41 @@ export const portfolioProjects: PortfolioProject[] = [
       {
         id: 'osaka',
         title: '大阪',
-        description: '霓虹与人流交织的夜色，拥挤但充满活力。',
-        images: ['/images/osaka-1.jpg', '/images/osaka-2.jpg'],
+        description: '大阪的街道，是城市的中心，也是城市的边界。',
+        images: ['/images/osaka-1.jpg', '/images/osaka-2.jpg', '/images/osaka-3.jpg', '/images/osaka-4.jpg', '/images/osaka-5.jpg'],
       },
       {
         id: 'kyoto',
         title: '京都',
-        description: '在静谧与克制里，寻找光影与建筑的秩序感。',
-        images: ['/images/urban-3.jpg', '/images/urban-4.jpg'],
+        description: '古色古香的街道，宁静而充满文化气息。',
+        images: ['/images/Kyoto-1.jpg', '/images/Kyoto-2.jpg', '/images/Kyoto-3.jpg', '/images/Kyoto-4.jpg', '/images/Kyoto-5.jpg', '/images/Kyoto-6.jpg'],
       },
       {
         id: 'tokyo',
         title: '东京',
-        description: '速度、密度与细节，构成一座永远醒着的城市。',
-        images: ['/images/Tokyo-1.jpg', '/images/Tokyo-2.jpg'],
+        description: '城市的速度与密度，构成了一个永远醒着的城市。',
+        images: ['/images/Tokyo-1.jpg', '/images/Tokyo-2.jpg', '/images/Tokyo-3.jpg', '/images/Tokyo-4.jpg', '/images/Tokyo-5.jpg', '/images/Tokyo-6.jpg', '/images/Tokyo-7.jpg', '/images/Tokyo-8.jpg', '/images/Tokyo-9.jpg', '/images/Tokyo-10.jpg'],
       },
       {
         id: 'takayama',
         title: '高山',
         description: '慢下来，感受山城街道与空气里微妙的温度。',
-        images: ['/images/UJI-1.jpg'],
+        images: ['/images/takayama-1.jpg', '/images/takayama-2.jpg', '/images/takayama-3.jpg', '/images/takayama-4.jpg', '/images/takayama-5.jpg', '/images/takayama-6.jpg'],
       },
+      {
+        id: ' Sydney',
+        title: '悉尼',
+        description: '在繁忙与繁华中，寻找悉尼的独特气质。',
+        images: ['/images/Sydney-1.jpg', '/images/Sydney-2.jpg', '/images/Sydney-3.jpg', '/images/Sydney-4.jpg', '/images/Sydney-5.jpg'],
+      },
+      {
+      id: 'golden coast',
+      title: '黄金海岸',
+      description: '在黄金海岸，你可以找到最接近原始的光。',
+      images: ['/images/golden-1.jpg', '/images/golden-2.jpg', '/images/golden-3.jpg', '/images/golden-4.jpg', '/images/golden-5.jpg'],
+      }
     ],
+
   }),
   createProject({
     id: 2,
