@@ -5,75 +5,13 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Carousel from './Carousel';
 import Lightbox from './Lightbox';
+import {
+  getProjectAllImages,
+  portfolioProjects,
+  type PortfolioProject,
+} from '../lib/portfolio';
 
 gsap.registerPlugin(ScrollTrigger);
-
-interface Project {
-  id: number;
-  title: string;
-  category: string;
-  description: string;
-  images: string[];
-}
-
-const projects: Project[] = [
-  {
-    id: 1,
-    title: '城市建筑',
-    category: '建筑',
-    description: '探索城市环境中的几何形态与光影之美。',
-    images: [
-      '/images/urban-1.jpg',
-      '/images/urban-2.jpg',
-      '/images/urban-3.jpg',
-      '/images/urban-4.jpg',
-      '/images/urban-5.jpg',
-      '/images/urban-6.jpg',
-    ],
-  },
-  {
-    id: 2,
-    title: '旷野遐想',
-    category: '自然',
-    description: '捕捉原始风景的宁静与壮丽。',
-    images: [
-      '/images/wild-1.jpg',
-      '/images/wild-2.jpg',
-      '/images/wild-3.jpg',
-      '/images/wild-4.jpg',
-      '/images/wild-5.jpg',
-      '/images/wild-6.jpg',
-    ],
-  },
-  {
-    id: 3,
-    title: '建筑光影',
-    category: '建筑',
-    description: '光与影在建筑空间中的戏剧性互动。',
-    images: [
-      '/images/light-1.jpg',
-      '/images/light-2.jpg',
-      '/images/light-3.jpg',
-      '/images/light-4.jpg',
-      '/images/light-5.jpg',
-      '/images/light-6.jpg',
-    ],
-  },
-  {
-    id: 4,
-    title: '生活碎片',
-    category: '生活',
-    description: '日常生活中稍纵即逝的瞬间与真实情感。',
-    images: [
-      '/images/life-1.jpg',
-      '/images/life-2.jpg',
-      '/images/life-3.jpg',
-      '/images/life-4.jpg',
-      '/images/life-5.jpg',
-      '/images/life-6.jpg',
-    ],
-  },
-];
 
 const PortfolioCard = ({
   project,
@@ -81,13 +19,14 @@ const PortfolioCard = ({
   onViewDetail,
   onOpenLightbox,
 }: {
-  project: Project;
+  project: PortfolioProject;
   index: number;
   onViewDetail: (id: number) => void;
   onOpenLightbox: (images: string[], index: number) => void;
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const hasAnimated = useRef(false);
+  const totalImagesCount = getProjectAllImages(project).length;
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -135,13 +74,13 @@ const PortfolioCard = ({
         {/* Carousel */}
         <div className="relative">
           <Carousel
-            images={project.images}
+            images={project.previewImages}
             autoPlay={true}
             interval={3000}
             showIndicators={true}
             showArrows={true}
             className="rounded-t-xl"
-            onImageClick={(imgIndex) => onOpenLightbox(project.images, imgIndex)}
+            onImageClick={(imgIndex) => onOpenLightbox(project.previewImages, imgIndex)}
           />
           
           {/* Category Badge */}
@@ -168,7 +107,7 @@ const PortfolioCard = ({
               {project.title}
             </h3>
             <span className="text-xs text-white/40 font-mono">
-              {project.images.length} 张
+              {totalImagesCount} 张
             </span>
           </div>
           <p className="text-sm text-white/50 leading-relaxed mb-4">
@@ -278,7 +217,7 @@ const Portfolio = () => {
 
         {/* Projects Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-          {projects.map((project, index) => (
+          {portfolioProjects.map((project, index) => (
             <PortfolioCard
               key={project.id}
               project={project}

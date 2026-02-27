@@ -7,75 +7,13 @@ import Lightbox from './Lightbox';
 import Slideshow from './Slideshow';
 import FavoritesGallery, { FavoriteButton } from './Favorites';
 import { getImageLoadingProps, getOptimizedImageSources } from '../lib/image';
+import {
+  getProjectAllImages,
+  getProjectById,
+  getProjectImageMetaList,
+} from '../lib/portfolio';
 
 gsap.registerPlugin(ScrollTrigger);
-
-interface Project {
-  id: number;
-  title: string;
-  category: string;
-  description: string;
-  images: string[];
-}
-
-const projects: Project[] = [
-  {
-    id: 1,
-    title: '城市建筑',
-    category: '建筑',
-    description: '探索城市环境中的几何形态与光影之美。从摩天大楼的玻璃幕墙到螺旋楼梯的优美曲线，每一张照片都试图捕捉建筑空间的独特魅力。',
-    images: [
-      '/images/urban-1.jpg',
-      '/images/urban-2.jpg',
-      '/images/urban-3.jpg',
-      '/images/urban-4.jpg',
-      '/images/urban-5.jpg',
-      '/images/urban-6.jpg',
-    ],
-  },
-  {
-    id: 2,
-    title: '旷野遐想',
-    category: '自然',
-    description: '捕捉原始风景的宁静与壮丽。从蜿蜒的河流到广袤的沙漠，从雾气缭绕的山谷到皑皑白雪，大自然的美无处不在。',
-    images: [
-      '/images/wild-1.jpg',
-      '/images/wild-2.jpg',
-      '/images/wild-3.jpg',
-      '/images/wild-4.jpg',
-      '/images/wild-5.jpg',
-      '/images/wild-6.jpg',
-    ],
-  },
-  {
-    id: 3,
-    title: '建筑光影',
-    category: '建筑',
-    description: '光与影在建筑空间中的戏剧性互动。光线透过百叶窗投射出的条纹、阳光从天窗倾泻而下的光束，每一束光都在讲述一个故事。',
-    images: [
-      '/images/light-1.jpg',
-      '/images/light-2.jpg',
-      '/images/light-3.jpg',
-      '/images/light-4.jpg',
-      '/images/light-5.jpg',
-      '/images/light-6.jpg',
-    ],
-  },
-  {
-    id: 4,
-    title: '生活碎片',
-    category: '生活',
-    description: '日常生活中稍纵即逝的瞬间与真实情感。公园长椅上的老人、雨后街道上的行人、咖啡馆窗边的宁静时光，这些都是生活最真实的写照。',
-    images: [
-      '/images/life-1.jpg',
-      '/images/life-2.jpg',
-      '/images/life-3.jpg',
-      '/images/life-4.jpg',
-      '/images/life-5.jpg',
-      '/images/life-6.jpg',
-    ],
-  },
-];
 
 const PortfolioDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -87,7 +25,12 @@ const PortfolioDetail = () => {
   const [slideshowOpen, setSlideshowOpen] = useState(false);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
 
-  const project = projects.find((p) => p.id === Number(id));
+  const projectId = Number(id);
+  const project = Number.isFinite(projectId) ? getProjectById(projectId) : undefined;
+  const allImages = project ? getProjectAllImages(project) : [];
+  const imageMetaList = project ? getProjectImageMetaList(project) : [];
+  const imageMetaBySrc = new Map(imageMetaList.map((m) => [m.src, m]));
+  const activeMeta = project ? imageMetaList[lightboxIndex] : undefined;
 
   useEffect(() => {
     if (!project) {
@@ -164,14 +107,14 @@ const PortfolioDetail = () => {
       
       if (e.key === 'ArrowLeft' && lightboxIndex > 0) {
         setLightboxIndex((prev) => prev - 1);
-      } else if (e.key === 'ArrowRight' && project && lightboxIndex < project.images.length - 1) {
+      } else if (e.key === 'ArrowRight' && project && lightboxIndex < allImages.length - 1) {
         setLightboxIndex((prev) => prev + 1);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [lightboxOpen, slideshowOpen, favoritesOpen, lightboxIndex, project]);
+  }, [lightboxOpen, slideshowOpen, favoritesOpen, lightboxIndex, project, allImages.length]);
 
   if (!project) return null;
 
@@ -213,11 +156,30 @@ const PortfolioDetail = () => {
           </p>
         </div>
 
+        {/* Groups navigation */}
+        <div className="flex flex-wrap gap-2 mb-10">
+          {project.groups.map((g) => (
+            <button
+              key={g.id}
+              onClick={() => {
+                document.getElementById(`group-${g.id}`)?.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start',
+                });
+              }}
+              className="px-3 py-1.5 rounded-full bg-white/10 text-white/70 hover:bg-white/20 hover:text-white transition-all duration-300 text-sm"
+            >
+              <span className="font-mono uppercase tracking-wider">{g.title}</span>
+              <span className="ml-2 text-xs text-white/40 font-mono">{g.images.length}</span>
+            </button>
+          ))}
+        </div>
+
         {/* Toolbar */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-4">
             <span className="text-sm text-white/40 font-mono">
-              共 {project.images.length} 张照片
+              共 {allImages.length} 张照片
             </span>
             
             {/* Slideshow button */}
@@ -267,69 +229,95 @@ const PortfolioDetail = () => {
         </div>
 
         {/* Gallery */}
-        <div
-          className={`grid gap-4 sm:gap-6 ${
-            viewMode === 'grid'
-              ? 'grid-cols-2 md:grid-cols-3'
-              : 'grid-cols-2 md:grid-cols-3 auto-rows-[200px]'
-          }`}
-        >
-          {project.images.map((image, index) => (
+        <div className="space-y-14">
+          {project.groups.map((group) => (
             <div
-              key={index}
-              className={`gallery-item group relative overflow-hidden rounded-lg cursor-pointer opacity-0 ${
-                viewMode === 'masonry'
-                  ? index % 3 === 0
-                    ? 'row-span-2'
-                    : ''
-                  : 'aspect-[4/3]'
-              }`}
-              onClick={() => openLightbox(index)}
+              key={group.id}
+              id={`group-${group.id}`}
+              className="scroll-mt-28"
             >
-              {(() => {
-                const { sources, imgSrc } = getOptimizedImageSources({
-                  src: image,
-                  sizes: '(max-width: 768px) 50vw, 33vw',
-                  widths: [320, 480, 640, 960, 1280],
-                });
-                const loadingProps = getImageLoadingProps();
-                return (
-                  <picture>
-                    {sources.map((s) => (
-                      <source key={s.type} type={s.type} srcSet={s.srcSet} sizes={s.sizes} />
-                    ))}
-                    <img
-                      src={imgSrc}
-                      alt={`${project.title} ${index + 1}`}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      style={{ transitionTimingFunction: 'var(--ease-expo-out)' }}
-                      {...loadingProps}
-                    />
-                  </picture>
-                );
-              })()}
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors duration-300">
-                {/* Favorite button */}
-                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <FavoriteButton
-                    image={image}
-                    projectTitle={project.title}
-                    category={project.category}
-                  />
-                </div>
-                
-                {/* View text */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="opacity-0 group-hover:opacity-100 text-white text-sm font-mono uppercase tracking-wider transition-opacity duration-300">
-                    查看
+              <div className="mb-6">
+                <div className="flex items-baseline justify-between gap-4">
+                  <h2 className="text-2xl sm:text-3xl font-normal text-white">
+                    {group.title}
+                  </h2>
+                  <span className="text-xs text-white/40 font-mono">
+                    {group.images.length} 张
                   </span>
                 </div>
+                <p className="mt-2 text-sm sm:text-base text-white/50 max-w-2xl leading-relaxed">
+                  {group.description}
+                </p>
               </div>
-              
-              {/* Index badge */}
-              <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-xs text-white/80 font-mono opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                {index + 1}
+
+              <div
+                className={`grid gap-4 sm:gap-6 ${
+                  viewMode === 'grid'
+                    ? 'grid-cols-2 md:grid-cols-3'
+                    : 'grid-cols-2 md:grid-cols-3 auto-rows-[200px]'
+                }`}
+              >
+                {group.images.map((image, index) => {
+                  const meta = imageMetaBySrc.get(image);
+                  const globalIndex = meta?.globalIndex ?? 0;
+                  const favCategory = meta ? `${project.category} / ${meta.groupTitle}` : project.category;
+
+                  return (
+                    <div
+                      key={image}
+                      className={`gallery-item group relative overflow-hidden rounded-lg cursor-pointer opacity-0 ${
+                        viewMode === 'masonry'
+                          ? index % 3 === 0
+                            ? 'row-span-2'
+                            : ''
+                          : 'aspect-[4/3]'
+                      }`}
+                      onClick={() => openLightbox(globalIndex)}
+                    >
+                      {(() => {
+                        const { sources, imgSrc } = getOptimizedImageSources({
+                          src: image,
+                          sizes: '(max-width: 768px) 50vw, 33vw',
+                          widths: [320, 480, 640, 960, 1280],
+                        });
+                        const loadingProps = getImageLoadingProps();
+                        return (
+                          <picture>
+                            {sources.map((s) => (
+                              <source key={s.type} type={s.type} srcSet={s.srcSet} sizes={s.sizes} />
+                            ))}
+                            <img
+                              src={imgSrc}
+                              alt={`${project.title} ${group.title} ${index + 1}`}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                              style={{ transitionTimingFunction: 'var(--ease-expo-out)' }}
+                              {...loadingProps}
+                            />
+                          </picture>
+                        );
+                      })()}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors duration-300">
+                        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <FavoriteButton
+                            image={image}
+                            projectTitle={project.title}
+                            category={favCategory}
+                          />
+                        </div>
+
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="opacity-0 group-hover:opacity-100 text-white text-sm font-mono uppercase tracking-wider transition-opacity duration-300">
+                            查看
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-xs text-white/80 font-mono opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        {index + 1}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           ))}
@@ -345,21 +333,31 @@ const PortfolioDetail = () => {
 
       {/* Lightbox */}
       <Lightbox
-        images={project.images}
+        images={allImages}
         currentIndex={lightboxIndex}
         isOpen={lightboxOpen}
         onClose={() => setLightboxOpen(false)}
         onNavigate={setLightboxIndex}
-        title={`${project.title} ${lightboxIndex + 1}`}
-        description={`${project.category} 摄影系列`}
+        title={
+          activeMeta
+            ? `${project.title} · ${activeMeta.groupTitle} ${activeMeta.groupIndex + 1}`
+            : `${project.title} ${lightboxIndex + 1}`
+        }
+        description={
+          activeMeta
+            ? `${project.category} / ${activeMeta.groupTitle}`
+            : `${project.category} 摄影系列`
+        }
         projectTitle={project.title}
-        category={project.category}
+        category={
+          activeMeta ? `${project.category} / ${activeMeta.groupTitle}` : project.category
+        }
       />
 
       {/* Slideshow */}
       <Slideshow
-        images={project.images}
-        titles={project.images.map((_, i) => `${project.title} ${i + 1}`)}
+        images={allImages}
+        titles={imageMetaList.map((m) => `${project.title} · ${m.groupTitle} ${m.groupIndex + 1}`)}
         isOpen={slideshowOpen}
         onClose={() => setSlideshowOpen(false)}
         initialIndex={lightboxIndex}
