@@ -36,6 +36,12 @@ export const portfolioProjects: PortfolioProject[] = [
     description: '穿行在街巷与天际线之间，记录每座城市独有的节奏。',
     groups: [
       {
+        id: 'city',
+        title: '城市风光',
+        description: '光与影，是城市的灵魂。',
+        images: ['/images/city-1.jpg', '/images/city-2.jpg', '/images/city-3.jpg','/images/city-4.jpg', '/images/city-6.jpg'],
+      },
+      {
         id: 'osaka',
         title: '大阪',
         description: '大阪的街道，是城市的中心，也是城市的边界。',
@@ -70,7 +76,13 @@ export const portfolioProjects: PortfolioProject[] = [
       title: '黄金海岸',
       description: '在黄金海岸，你可以找到最接近原始的光。',
       images: ['/images/golden-1.jpg', '/images/golden-2.jpg', '/images/golden-3.jpg', '/images/golden-4.jpg', '/images/golden-5.jpg'],
-      }
+      },
+      {
+        id: 'bangkok',
+        title: '曼谷',
+        description: '曼谷，一个充满活力与魅力的城市，让人流连忘返。',
+        images: ['/images/bangkok-1.jpg', '/images/bangkok-2.jpg', '/images/bangkok-3.jpg', '/images/bangkok-4.jpg', '/images/bangkok-5.jpg'],
+      },
     ],
 
   }),
@@ -81,22 +93,22 @@ export const portfolioProjects: PortfolioProject[] = [
     description: '在风与云之间，收集更接近原始的光。',
     groups: [
       {
-        id: 'mountain',
-        title: '山脊',
-        description: '线条与层次，是山脉最清晰的语言。',
-        images: ['/images/wild-1.jpg', '/images/wild-2.jpg'],
+        id: 'xinsuigao',
+        title: '新穗高',
+        description: '日本北陆的新穗高，是一个神秘的区域。',
+        images: ['/images/xinsuigao-1.jpg', '/images/xinsuigao-2.jpg'],
       },
       {
-        id: 'valley',
-        title: '溪谷',
-        description: '湿润的空气与柔和的明暗，藏着更安静的声音。',
-        images: ['/images/wild-3.jpg', '/images/wild-4.jpg'],
+        id: 'maple',
+        title: '枫叶',
+        description: '枫叶，是一种非常特殊的植物，它的叶子有独特的形状。',
+        images: ['/images/Koyto-9.jpg', '/images/Koyto-10.jpg', '/images/Koyto-11.jpg', '/images/Koyto-12.jpg', '/images/Koyto-13.jpg', '/images/Koyto-14.jpg' , '/images/Koyto-15.jpg', '/images/Koyto-16.jpg'],
       },
       {
-        id: 'sky',
-        title: '天光',
-        description: '短暂但决定性的瞬间，让一切变得不一样。',
-        images: ['/images/wild-5.jpg', '/images/wild-6.jpg'],
+        id: 'beach',
+        title: '海滩', // TODO: Change title
+        description: '阳光与沙滩，美丽在此刻绽放。',
+        images: ['/images/noosa-1.jpg', '/images/noosa-2.jpg'],
       },
     ],
   }),
