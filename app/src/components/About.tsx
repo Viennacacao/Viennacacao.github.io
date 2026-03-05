@@ -189,7 +189,7 @@ const About = () => {
                 const { sources, imgSrc } = getOptimizedImageSources({
                   src: '/images/avatar.jpg',
                   sizes: '(max-width: 640px) 256px, (max-width: 1024px) 320px, 384px',
-                  widths: [256, 320, 384, 512, 640],
+                  widths: [256, 320, 480, 640],
                 });
                 const loadingProps = getImageLoadingProps();
                 return (

@@ -139,7 +139,7 @@ const Carousel = ({
               const { sources, imgSrc } = getOptimizedImageSources({
                 src: image,
                 sizes: '(max-width: 768px) 100vw, 50vw',
-                widths: [480, 768, 1024, 1280, 1600],
+                widths: [480, 640, 960, 1280, 1600],
               });
               const loadingProps = getImageLoadingProps({ priority: index === 0 });
               return (

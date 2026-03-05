@@ -41,22 +41,28 @@ npm run dev
 
 ## 图片优化（本地生成）
 
-为了提升加载速度，本项目会在启动开发环境与构建前自动生成优化图片：
+为了提升加载速度，本项目会在启动开发环境与构建前自动生成优化图片。图片按类别存放在子目录中（例如 `city` / `nature` / `life` 等），优化后的图片会在 `optimized` 目录下以相同目录结构生成。
 
-- 原图目录：`app/public/images/`
-- 生成目录：`app/public/images/optimized/`（不提交到 Git）
-- 生成内容：WebP + 多尺寸（供 `<picture>` + `srcset/sizes` 使用）
+- 原图目录：`app/public/images/`（支持子目录，例如 `images/city/osaka-1.jpg`）
+- 生成目录：`app/public/images/optimized/`（不提交到 Git，结构镜像原始目录，例如 `images/optimized/city/osaka-1-1280.webp`）
+- 生成内容：**仅 WebP 多尺寸变体**，文件命名为 `{subdir}/{name}-{width}.webp`，当前统一宽度档位为 `96/128/160/256/320/480/640/960/1280/1600/1920/2560`。这些变体用于 `<picture>` + `srcset/sizes`，压缩脚本会避免放大生成超过原始宽度的尺寸，并跳过已存在且未变更的文件，同时清理掉已无对应原图或非 WebP 的旧优化文件，保证输出目录干净可控。
 
 ### 更换图片后如何生效
 
 页面实际使用的是 `app/public/images/optimized/` 下生成的文件，因此只修改 `app/dist/` 里的图片不会生效。
 
-当你替换了 `app/public/images/*.jpg/png`（文件名不变）后，执行：
+当你替换了 `app/public/images/**/*.jpg/png`（文件名不变，包含子目录）后，执行：
 
 ```bash
 cd app
-touch public/images/avatar.jpg
-rm -f public/images/optimized/avatar-*.webp public/images/optimized/avatar-*.jpg public/images/optimized/avatar-*.png
+npm run images:optimize
+```
+
+如只替换了单张图片（例如 `public/images/city/avatar.jpg`），也可以只触发对应文件的 mtime 以便增量生成：
+
+```bash
+cd app
+touch public/images/city/avatar.jpg
 npm run images:optimize
 ```
 

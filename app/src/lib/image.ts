@@ -8,7 +8,7 @@ export type ImageVariant = {
 
 const OPTIMIZED_DIR = '/images/optimized'
 
-const DEFAULT_WIDTHS = [320, 480, 640, 768, 960, 1024, 1280, 1600, 1920, 2560] as const
+const DEFAULT_WIDTHS = [320, 480, 640, 960, 1280, 1600, 1920, 2560] as const
 
 function parseImagePath(src: string): { name: string; ext: ImageFormat } | null {
   const match = src.match(/^\/images\/(.+)\.(jpg|jpeg|png)$/i)
@@ -19,7 +19,11 @@ function parseImagePath(src: string): { name: string; ext: ImageFormat } | null 
 }
 
 function buildSrcSet(name: string, ext: string, widths: readonly number[]): string {
-  return widths.map((w) => `${OPTIMIZED_DIR}/${name}-${w}.${ext} ${w}w`).join(', ')
+  const slashIndex = name.lastIndexOf('/')
+  const subDir = slashIndex >= 0 ? name.slice(0, slashIndex) : ''
+  const baseName = slashIndex >= 0 ? name.slice(slashIndex + 1) : name
+  const optimizedDir = subDir ? `${OPTIMIZED_DIR}/${subDir}` : OPTIMIZED_DIR
+  return widths.map((w) => `${optimizedDir}/${baseName}-${w}.${ext} ${w}w`).join(', ')
 }
 
 export function getOptimizedImageSources(options: {
@@ -38,29 +42,25 @@ export function getOptimizedImageSources(options: {
     }
   }
 
-  const rasterExt = parsed.ext === 'png' ? 'png' : 'jpg'
-  const rasterType = rasterExt === 'png' ? 'image/png' : 'image/jpeg'
-
   const sources: ImageVariant[] = [
     {
       type: 'image/webp',
       srcSet: buildSrcSet(parsed.name, 'webp', widths),
       sizes: options.sizes,
     },
-    {
-      type: rasterType,
-      srcSet: buildSrcSet(parsed.name, rasterExt, widths),
-      sizes: options.sizes,
-    },
   ]
 
   const defaultWidth = widths[Math.floor(widths.length / 2)] ?? 1280
-  const imgSrc = `${OPTIMIZED_DIR}/${parsed.name}-${defaultWidth}.${rasterExt}`
+  const slashIndex = parsed.name.lastIndexOf('/')
+  const subDir = slashIndex >= 0 ? parsed.name.slice(0, slashIndex) : ''
+  const baseName = slashIndex >= 0 ? parsed.name.slice(slashIndex + 1) : parsed.name
+  const optimizedDir = subDir ? `${OPTIMIZED_DIR}/${subDir}` : OPTIMIZED_DIR
+  const imgSrc = `${optimizedDir}/${baseName}-${defaultWidth}.webp`
 
   return {
     sources,
     imgSrc,
-    imgSrcSet: sources[1]?.srcSet,
+    imgSrcSet: sources[0]?.srcSet,
     imgSizes: options.sizes,
   }
 }

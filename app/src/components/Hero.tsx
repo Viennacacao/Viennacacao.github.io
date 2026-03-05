@@ -205,7 +205,7 @@ const Hero = () => {
           const { sources, imgSrc } = getOptimizedImageSources({
             src: '/images/hero-bg.jpg',
             sizes: '100vw',
-            widths: [768, 1280, 1920, 2560],
+            widths: [640, 1280, 1920, 2560],
           });
           const loadingProps = getImageLoadingProps({ priority: true });
           return (

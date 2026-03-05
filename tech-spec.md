@@ -97,22 +97,21 @@ app/
 
 ### 图片优化（本地生成）
 
-本项目继续使用本地图片（`app/public/images`），但会在开发/构建前自动生成优化版本（WebP + 多尺寸）以提升加载速度与响应式体验。
+本项目继续使用本地图片（`app/public/images`），但图片会按照业务类别拆分存放在子目录中（例如 `city` / `nature` / `life` 等）；在开发/构建前会自动生成优化版本，并在 `optimized` 目录下以相同的子目录结构输出，以提升加载速度与响应式体验。
 
-- 原图目录：`app/public/images/`
-- 生成目录：`app/public/images/optimized/`（已加入 `.gitignore`，不提交）
-- 生成内容：`{name}-{width}.webp` 与 `{name}-{width}.jpg/png`，供 `<picture>` + `srcset/sizes` 使用
+- 原图目录：`app/public/images/`，支持多级子目录（如 `images/city/osaka-1.jpg`）
+- 生成目录：`app/public/images/optimized/`（已加入 `.gitignore`，不提交；结构镜像原始目录，例如 `images/optimized/city/osaka-1-1280.webp`）
+- 生成内容：**仅 WebP 多尺寸变体**，命名为 `{subdir}/{name}-{width}.webp`，统一宽度档位为 `96/128/160/256/320/480/640/960/1280/1600/1920/2560`；压缩脚本会避免放大生成超过原始宽度的尺寸，跳过已存在且未变更的文件，并清理掉已无对应原图或非 WebP 的旧优化文件，保证输出目录干净可控。
 
 #### 更换图片后的重新生成与刷新
 
-如果你替换了 `app/public/images/*.jpg/png` 的内容但文件名不变（例如 `avatar.jpg`），需要重新生成对应的优化图片；只修改 `app/dist/` 属于修改构建产物，不会影响生成结果与页面引用。
+如果你替换了 `app/public/images/*.jpg/png` 的内容但文件名不变（例如 `avatar.jpg`），需要重新生成对应的优化图片；只修改 `app/dist/` 属于修改构建产物，不会影响生成结果与页面引用。生成的优化文件将是对应的 WebP 多尺寸变体。
 
 推荐流程：
 
 ```bash
 cd app
 touch public/images/avatar.jpg
-rm -f public/images/optimized/avatar-*.webp public/images/optimized/avatar-*.jpg public/images/optimized/avatar-*.png
 npm run images:optimize
 ```
 
