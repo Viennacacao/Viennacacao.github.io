@@ -25,6 +25,8 @@ const PortfolioDetail = () => {
   const [slideshowOpen, setSlideshowOpen] = useState(false);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [thumbFitBySrc, setThumbFitBySrc] = useState<Record<string, 'cover' | 'contain'>>({});
+  const [isWideBySrc, setIsWideBySrc] = useState<Record<string, boolean>>({});
+  const [isUltraWideBySrc, setIsUltraWideBySrc] = useState<Record<string, boolean>>({});
 
   const projectId = Number(id);
   const project = Number.isFinite(projectId) ? getProjectById(projectId) : undefined;
@@ -126,8 +128,14 @@ const PortfolioDetail = () => {
     if (!w || !h) return;
 
     const ratio = w / h;
-    const nextFit: 'cover' | 'contain' = ratio < 0.85 ? 'contain' : 'cover';
+    const nextFit: 'cover' | 'contain' = ratio < 0.85 || ratio > 1.8 ? 'contain' : 'cover';
     setThumbFitBySrc((prev) => (prev[src] === nextFit ? prev : { ...prev, [src]: nextFit }));
+    const nextIsWide = ratio > 1.25;
+    setIsWideBySrc((prev) => (prev[src] === nextIsWide ? prev : { ...prev, [src]: nextIsWide }));
+    const nextIsUltraWide = ratio > 2.4;
+    setIsUltraWideBySrc((prev) =>
+      prev[src] === nextIsUltraWide ? prev : { ...prev, [src]: nextIsUltraWide }
+    );
   };
 
   const openLightbox = (index: number) => {
@@ -265,8 +273,8 @@ const PortfolioDetail = () => {
               <div
                 className={
                   viewMode === 'grid'
-                    ? 'flex flex-wrap gap-4 sm:gap-6 items-start'
-                    : 'grid grid-cols-2 md:grid-cols-3 auto-rows-[200px] gap-4 sm:gap-6'
+                    ? 'grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-6 gap-2 sm:gap-3 md:gap-4'
+                    : 'grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3'
                 }
               >
                 {group.images.map((image, index) => {
@@ -276,39 +284,39 @@ const PortfolioDetail = () => {
                   const thumbFit = thumbFitBySrc[image] ?? 'cover';
                   const hoverScaleClass = thumbFit === 'contain' ? '' : 'group-hover:scale-110';
                   const isGrid = viewMode === 'grid';
+                  const isWide = isWideBySrc[image] ?? false;
+                  const isUltraWide = isUltraWideBySrc[image] ?? false;
+                  const sizes =
+                    isWide || isUltraWide
+                      ? '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
+                      : '(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw';
 
                   return (
                     <div
                       key={image}
                       className={`gallery-item group relative opacity-0 ${
                         isGrid
-                          ? 'flex items-center'
-                          : `overflow-hidden rounded-lg cursor-pointer bg-white/5 ${
-                              index % 3 === 0 ? 'row-span-2' : ''
+                          ? `${isWide || isUltraWide ? 'col-span-2' : ''}`
+                          : `overflow-hidden cursor-pointer ${
+                              isWide || isUltraWide ? 'col-span-2 md:col-span-2' : ''
                             }`
                       }`}
                     >
                       <div
-                        className={`relative overflow-hidden rounded-lg ${
-                          isGrid
-                            ? `inline-block h-[220px] sm:h-[260px] lg:h-[300px] max-w-full ${
-                                thumbFit === 'cover' ? 'aspect-[4/3]' : ''
-                              }`
-                            : 'w-full h-full'
-                        } ${isGrid ? 'cursor-pointer bg-black' : ''}`}
+                        className={`relative overflow-hidden rounded-[12px] ${
+                          isGrid ? 'w-full h-[220px] sm:h-[260px] lg:h-[320px]' : 'w-full h-full'
+                        } ${isGrid ? 'cursor-pointer' : ''}`}
                         onClick={() => openLightbox(globalIndex)}
                       >
                         {(() => {
                           const { sources, imgSrc } = getOptimizedImageSources({
                             src: image,
-                            sizes: '(max-width: 768px) 50vw, 33vw',
+                            sizes,
                             widths: [320, 480, 640, 960, 1280],
                           });
                           const loadingProps = getImageLoadingProps();
                           const imageClassName = isGrid
-                            ? thumbFit === 'contain'
-                              ? 'h-full w-auto max-w-full object-contain'
-                              : 'w-full h-full object-cover'
+                            ? 'w-full h-full object-cover'
                             : `w-full h-full transition-transform duration-500 ${hoverScaleClass} ${
                                 thumbFit === 'contain' ? 'object-contain' : 'object-cover'
                               }`;
