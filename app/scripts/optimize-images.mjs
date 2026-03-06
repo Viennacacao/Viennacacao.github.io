@@ -9,6 +9,11 @@ const widths = [96, 128, 160, 256, 320, 480, 640, 960, 1280, 1600, 1920, 2560]
 const widthSet = new Set(widths)
 const rasterExts = ['jpg', 'jpeg', 'png']
 
+let totalSources = 0
+let skippedImages = 0
+let generatedImages = 0
+let deletedOutputs = 0
+
 async function listFilesRecursive(dir, { ignoreDirNames = [] } = {}) {
   const results = []
   const ignoreSet = new Set(ignoreDirNames)
@@ -75,6 +80,7 @@ async function cleanupStaleOutputs() {
       const parsed = parseOptimizedFilename(relFile)
       if (!parsed) return
       if (parsed.ext !== 'webp') {
+        deletedOutputs += 1
         await fs.rm(path.join(outputDir, relFile), { force: true })
         return
       }
@@ -83,6 +89,7 @@ async function cleanupStaleOutputs() {
       )
       const hasSource = sourceChecks.some(Boolean)
       if (hasSource) return
+      deletedOutputs += 1
       await fs.rm(path.join(outputDir, relFile), { force: true })
     })
   )
@@ -96,6 +103,8 @@ async function optimizeOne({ file, force }) {
   const inputPath = path.join(inputDir, file)
   if (!(await fileExists(inputPath))) return
 
+  totalSources += 1
+
   const relOutDir = path.dirname(name)
   const outputDirForFile = path.join(outputDir, relOutDir === '.' ? '' : relOutDir)
   await fs.mkdir(outputDirForFile, { recursive: true })
@@ -105,7 +114,10 @@ async function optimizeOne({ file, force }) {
 
   if (!force) {
     const skip = await shouldSkip(inputPath, outputPaths)
-    if (skip) return
+    if (skip) {
+      skippedImages += 1
+      return
+    }
   }
 
   const inputBuffer = await fs.readFile(inputPath)
@@ -122,6 +134,8 @@ async function optimizeOne({ file, force }) {
         .toFile(webpOut)
     })
   )
+
+  generatedImages += 1
 }
 
 async function runPool(items, worker, concurrency) {
@@ -147,11 +161,17 @@ async function main() {
 
   await fs.mkdir(outputDir, { recursive: true })
   await cleanupStaleOutputs()
+  const start = Date.now()
   const entries = await listFilesRecursive(inputDir, { ignoreDirNames: ['optimized'] })
   await runPool(
     entries.map((file) => ({ file, force })),
     optimizeOne,
     4
+  )
+
+  const duration = ((Date.now() - start) / 1000).toFixed(2)
+  console.log(
+    `[images:optimize] scanned=${entries.length} sources=${totalSources} generated=${generatedImages} skipped=${skippedImages} deleted=${deletedOutputs} clean=${clean} force=${force} time=${duration}s`
   )
 }
 
