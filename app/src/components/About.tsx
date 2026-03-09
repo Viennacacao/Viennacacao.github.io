@@ -155,7 +155,7 @@ const About = () => {
     <section
       id="about"
       ref={sectionRef}
-      className="relative w-full py-24 sm:py-32 lg:py-40 bg-black overflow-hidden"
+      className="relative w-full py-24 sm:py-32 lg:py-40 bg-background overflow-hidden"
       onMouseMove={handleMouseMove}
     >
       {/* Floating decorative elements */}
@@ -286,9 +286,9 @@ const About = () => {
                         <span className="text-sm text-white/80">{skill.name}</span>
                         <span className="text-sm text-white/40">{skill.level}%</span>
                       </div>
-                      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                      <div className="h-2 bg-white/10 rounded-full overflow-hidden skill-bar-track">
                         <div
-                          className="h-full bg-white rounded-full transition-all duration-1000 ease-out"
+                          className="h-full bg-white rounded-full transition-all duration-1000 ease-out skill-bar-fill"
                           style={{
                             width: `${skill.level}%`,
                             transitionDelay: `${index * 100}ms`,
@@ -309,20 +309,20 @@ const About = () => {
                     >
                       {/* Timeline line */}
                       {index < milestones.length - 1 && (
-                        <div className="absolute left-[3px] top-8 bottom-0 w-px bg-white/10" />
+                        <div className="absolute left-[3px] top-8 bottom-0 w-px bg-white/10 timeline-line" />
                       )}
                       
                       {/* Dot */}
                       <div className="relative flex-shrink-0">
-                        <div className="w-2 h-2 rounded-full bg-white/60" />
+                        <div className="w-2 h-2 rounded-full bg-white/60 timeline-dot" />
                       </div>
                       
                       {/* Content */}
                       <div>
-                        <span className="text-sm font-mono text-white/40 block mb-1">
+                        <span className="text-sm font-mono text-white/40 block mb-1 timeline-year">
                           {milestone.year}
                         </span>
-                        <span className="text-white/80">{milestone.event}</span>
+                        <span className="text-white/80 timeline-event">{milestone.event}</span>
                       </div>
                     </div>
                   ))}

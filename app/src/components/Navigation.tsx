@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Sun, Moon } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -8,6 +9,7 @@ const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isHomePage = location.pathname === '/';
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -70,19 +72,19 @@ const Navigation = () => {
             {/* Logo */}
             <button
               onClick={goHome}
-              className="text-xl font-medium text-white hover:scale-105 transition-transform duration-300"
+              className="text-xl font-medium text-foreground hover:scale-105 transition-transform duration-300"
               style={{ transitionTimingFunction: 'var(--ease-elastic)' }}
             >
               cacao
             </button>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-8">
+            <div className="hidden md:flex items-center gap-6">
               {navLinks.map((link, index) => (
                 <button
                   key={link.name}
                   onClick={() => scrollToSection(link.href)}
-                  className="text-sm text-white/80 hover:text-white link-underline transition-colors duration-300"
+                  className="text-sm text-foreground/80 hover:text-foreground link-underline transition-colors duration-300"
                   style={{
                     animationDelay: `${index * 80}ms`,
                   }}
@@ -90,23 +92,42 @@ const Navigation = () => {
                   {link.name}
                 </button>
               ))}
+
+              <button
+                type="button"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                aria-label="切换主题"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background/80 text-foreground shadow-xs hover:bg-accent/80 hover:text-accent-foreground transition-colors duration-300"
+              >
+                {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+              </button>
             </div>
 
             {/* Mobile Menu Button */}
-            <button
-              className="md:hidden text-white p-2"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle menu"
-            >
+            <div className="flex items-center gap-2 md:hidden">
+              <button
+                type="button"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                aria-label="切换主题"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background/80 text-foreground shadow-xs hover:bg-accent/80 hover:text-accent-foreground transition-colors duration-300"
+              >
+                {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+              </button>
+              <button
+                className="md:hidden text-foreground p-2"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label="Toggle menu"
+              >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+              </button>
+            </div>
           </div>
         </div>
       </nav>
 
       {/* Mobile Menu */}
       <div
-        className={`fixed inset-0 z-40 bg-black transition-all duration-500 md:hidden ${
+        className={`fixed inset-0 z-40 bg-background transition-all duration-500 md:hidden ${
           isMobileMenuOpen
             ? 'opacity-100 pointer-events-auto'
             : 'opacity-0 pointer-events-none'
@@ -118,7 +139,7 @@ const Navigation = () => {
             <button
               key={link.name}
               onClick={() => scrollToSection(link.href)}
-              className={`text-2xl text-white/80 hover:text-white transition-all duration-500 ${
+              className={`text-2xl text-foreground/80 hover:text-foreground transition-all duration-500 ${
                 isMobileMenuOpen
                   ? 'translate-y-0 opacity-100'
                   : 'translate-y-4 opacity-0'

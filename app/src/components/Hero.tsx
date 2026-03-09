@@ -3,6 +3,7 @@ import { ChevronDown } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { getImageLoadingProps, getOptimizedImageSources } from '../lib/image';
+import { useTheme } from 'next-themes';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,6 +13,7 @@ const Hero = () => {
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     // Small delay to ensure DOM is ready
@@ -202,8 +204,9 @@ const Hero = () => {
         style={{ opacity: 1 }}
       >
         {(() => {
+          const isLight = theme === 'light';
           const { sources, imgSrc } = getOptimizedImageSources({
-            src: '/images/hero-bg.jpg',
+            src: isLight ? '/images/city/bird-1.jpg' : '/images/hero-bg.jpg',
             sizes: '100vw',
             widths: [640, 1280, 1920, 2560],
           });
@@ -223,7 +226,13 @@ const Hero = () => {
           );
         })()}
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black" />
+        <div
+          className={`absolute inset-0 bg-gradient-to-b transition-opacity duration-500 ${
+            theme === 'light'
+              ? 'from-white/20 via-white/10 to-white/40'
+              : 'from-black/40 via-black/20 to-black'
+          }`}
+        />
       </div>
 
       {/* Content */}

@@ -133,7 +133,7 @@ const Lightbox = ({
           <div className="flex items-center gap-2 sm:gap-3">
             {/* Slideshow button */}
             <button
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-all duration-300"
+              className="slideshow-btn w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-all duration-300"
               onClick={(e) => {
                 e.stopPropagation();
                 setSlideshowOpen(true);
@@ -160,7 +160,7 @@ const Lightbox = ({
 
             {/* Download button */}
             <button
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-all duration-300"
+              className="slideshow-btn w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-all duration-300"
               onClick={(e) => {
                 e.stopPropagation();
                 handleDownload();
@@ -172,7 +172,7 @@ const Lightbox = ({
 
             {/* Close button */}
             <button
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-all duration-300"
+              className="slideshow-btn w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-all duration-300"
               onClick={onClose}
               title="关闭"
             >
@@ -188,7 +188,7 @@ const Lightbox = ({
         >
           {/* Previous button */}
           <button
-            className="absolute left-4 sm:left-8 z-10 w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-all duration-300 hover:scale-110"
+            className="slideshow-btn absolute left-4 sm:left-8 z-10 w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-all duration-300 hover:scale-110"
             onClick={(e) => {
               e.stopPropagation();
               handlePrev();
@@ -255,7 +255,7 @@ const Lightbox = ({
 
           {/* Next button */}
           <button
-            className="absolute right-4 sm:right-8 z-10 w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-all duration-300 hover:scale-110"
+            className="slideshow-btn absolute right-4 sm:right-8 z-10 w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-all duration-300 hover:scale-110"
             onClick={(e) => {
               e.stopPropagation();
               handleNext();

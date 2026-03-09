@@ -146,7 +146,7 @@ const PortfolioDetail = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full min-h-screen bg-black pt-24 pb-16"
+      className="relative w-full min-h-screen bg-background pt-24 pb-16"
     >
       <div className="w-full px-6 sm:px-8 lg:px-12 xl:px-16">
         {/* Back button */}

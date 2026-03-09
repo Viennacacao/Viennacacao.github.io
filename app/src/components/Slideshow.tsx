@@ -125,7 +125,10 @@ const Slideshow = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black">
+    <div
+      className="fixed inset-0 z-[100] bg-black"
+      onClick={(e) => e.stopPropagation()}
+    >
       {/* Top controls */}
       <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-6 bg-gradient-to-b from-black/60 to-transparent">
         {/* Counter */}
@@ -145,7 +148,7 @@ const Slideshow = ({
           {/* Play/Pause */}
           <button
             onClick={() => setIsPlaying(!isPlaying)}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 transition-all duration-300"
+            className="slideshow-btn w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 transition-all duration-300"
             title={isPlaying ? '暂停' : '播放'}
           >
             {isPlaying ? <Pause size={18} /> : <Play size={18} />}
@@ -154,8 +157,8 @@ const Slideshow = ({
           {/* Settings */}
           <button
             onClick={() => setShowSettings(!showSettings)}
-            className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300 ${
-              showSettings ? 'bg-white text-black' : 'bg-white/10 text-white/80 hover:bg-white/20'
+            className={`slideshow-btn w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300 ${
+              showSettings ? '' : ''
             }`}
             title="设置"
           >
@@ -165,7 +168,7 @@ const Slideshow = ({
           {/* Close */}
           <button
             onClick={onClose}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 transition-all duration-300"
+            className="slideshow-btn w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 transition-all duration-300"
             title="关闭"
           >
             <X size={20} />
@@ -181,19 +184,24 @@ const Slideshow = ({
             <div>
               <label className="text-xs text-white/50 mb-2 block">切换间隔</label>
               <div className="flex gap-2">
-                {[2000, 3000, 5000, 8000].map((ms) => (
-                  <button
-                    key={ms}
-                    onClick={() => setSlideInterval(ms)}
-                    className={`px-3 py-1.5 text-xs rounded-lg transition-all duration-300 ${
-                      slideInterval === ms
-                        ? 'bg-white text-black'
-                        : 'bg-white/10 text-white/60 hover:bg-white/20'
-                    }`}
-                  >
-                    {ms / 1000}s
-                  </button>
-                ))}
+                {[2000, 3000, 5000, 8000].map((ms) => {
+                  const isActive = slideInterval === ms;
+                  return (
+                    <button
+                      key={ms}
+                      onClick={() => setSlideInterval(ms)}
+                      className={`slideshow-setting-btn ${
+                        isActive ? 'slideshow-setting-btn--active' : ''
+                      } px-3 py-1.5 text-xs rounded-lg transition-all duration-300 ${
+                        isActive
+                          ? 'bg-white text-black'
+                          : 'bg-white/10 text-white/60 hover:bg-white/20'
+                      }`}
+                    >
+                      {ms / 1000}s
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -201,19 +209,24 @@ const Slideshow = ({
             <div>
               <label className="text-xs text-white/50 mb-2 block">过渡效果</label>
               <div className="flex gap-2">
-                {(['fade', 'slide', 'zoom'] as const).map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => setTransition(t)}
-                    className={`px-3 py-1.5 text-xs rounded-lg transition-all duration-300 capitalize ${
-                      transition === t
-                        ? 'bg-white text-black'
-                        : 'bg-white/10 text-white/60 hover:bg-white/20'
-                    }`}
-                  >
-                    {t === 'fade' ? '淡入' : t === 'slide' ? '滑动' : '缩放'}
-                  </button>
-                ))}
+                {(['fade', 'slide', 'zoom'] as const).map((t) => {
+                  const isActive = transition === t;
+                  return (
+                    <button
+                      key={t}
+                      onClick={() => setTransition(t)}
+                      className={`slideshow-setting-btn ${
+                        isActive ? 'slideshow-setting-btn--active' : ''
+                      } px-3 py-1.5 text-xs rounded-lg transition-all duration-300 capitalize ${
+                        isActive
+                          ? 'bg-white text-black'
+                          : 'bg-white/10 text-white/60 hover:bg-white/20'
+                      }`}
+                    >
+                      {t === 'fade' ? '淡入' : t === 'slide' ? '滑动' : '缩放'}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>

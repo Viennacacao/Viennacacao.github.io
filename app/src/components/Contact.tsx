@@ -183,7 +183,7 @@ const Contact = () => {
     <section
       id="contact"
       ref={sectionRef}
-      className="relative w-full py-24 sm:py-32 lg:py-40 bg-black"
+      className="relative w-full py-24 sm:py-32 lg:py-40 bg-background"
     >
       <div className="w-full px-6 sm:px-8 lg:px-12 xl:px-16">
         {/* Main Content */}

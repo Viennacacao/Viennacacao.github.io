@@ -85,7 +85,7 @@ const PortfolioCard = ({
           
           {/* Category Badge */}
           <div className="absolute top-4 left-4 z-10">
-            <span className="px-3 py-1.5 text-xs font-mono uppercase tracking-wider bg-black/70 backdrop-blur-md text-white rounded-full">
+            <span className="portfolio-card-badge px-3 py-1.5 text-xs font-mono uppercase tracking-wider bg-black/70 backdrop-blur-md text-white rounded-full">
               {project.category}
             </span>
           </div>
@@ -93,7 +93,7 @@ const PortfolioCard = ({
           {/* View Detail Button */}
           <button
             onClick={() => onViewDetail(project.id)}
-            className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-md text-white/80 hover:bg-white hover:text-black transition-all duration-300 hover:scale-110"
+            className="portfolio-card-btn absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-md text-white/80 hover:bg-white hover:text-black transition-all duration-300 hover:scale-110"
             title="查看全部"
           >
             <Plus size={20} />
@@ -201,7 +201,7 @@ const Portfolio = () => {
     <section
       id="portfolio"
       ref={sectionRef}
-      className="relative w-full py-24 sm:py-32 lg:py-40 bg-black"
+      className="relative w-full py-24 sm:py-32 lg:py-40 bg-background"
     >
       <div className="w-full px-6 sm:px-8 lg:px-12 xl:px-16">
         {/* Section Header */}

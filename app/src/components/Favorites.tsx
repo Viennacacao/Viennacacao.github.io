@@ -61,7 +61,7 @@ export const FavoriteButton = ({
   return (
     <button
       onClick={handleClick}
-      className={`favorite-heart w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300 ${
+      className={`favorite-heart w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300 slideshow-btn ${
         isFav
           ? 'bg-red-500/20 text-red-500'
           : 'bg-white/10 text-white/60 hover:bg-white/20 hover:text-white'
@@ -118,13 +118,13 @@ const FavoritesGallery = ({ isOpen, onClose }: FavoritesGalleryProps) => {
   const images = favorites.map((f) => f.image);
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl overflow-auto">
+    <div className="favorites-overlay fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl overflow-auto">
       {/* Header */}
-      <div className="sticky top-0 z-10 flex items-center justify-between p-6 bg-black/80 backdrop-blur-md border-b border-white/10">
+      <div className="favorites-header sticky top-0 z-10 flex items-center justify-between p-6 bg-black/80 backdrop-blur-md border-b border-white/10">
         <div className="flex items-center gap-3">
           <Heart className="text-red-500" fill="currentColor" size={24} />
           <h2 className="text-xl font-medium text-white">我的收藏</h2>
-          <span className="px-2 py-0.5 text-xs bg-white/10 rounded-full text-white/60">
+          <span className="favorites-badge px-2 py-0.5 text-xs bg-white/10 rounded-full text-white/60">
             {favorites.length}
           </span>
         </div>
@@ -149,7 +149,7 @@ const FavoritesGallery = ({ isOpen, onClose }: FavoritesGalleryProps) => {
             {favorites.map((favorite, index) => (
               <div
                 key={favorite.image}
-                className="group relative aspect-square overflow-hidden rounded-lg bg-white/5"
+                className="favorites-card group relative aspect-square overflow-hidden rounded-lg bg-white/5"
               >
                 {(() => {
                   const { sources, imgSrc } = getOptimizedImageSources({
