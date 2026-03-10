@@ -16,7 +16,7 @@ const skills = [
 
 const milestones = [
   { year: '2016', event: '开始摄影之旅' },
-  { year: '2018', event: '首次个展《城市之光》' },
+  { year: '2018', event: '首个摄影集《Water Lily》' },
   { year: '2020', event: '获得国家地理摄影奖' },
   { year: '2022', event: '出版摄影集《瞬间》' },
   { year: '2024', event: '创立个人工作室' },

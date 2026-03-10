@@ -206,7 +206,7 @@ const Hero = () => {
         {(() => {
           const isLight = theme === 'light';
           const { sources, imgSrc } = getOptimizedImageSources({
-            src: isLight ? '/images/city/bird-1.jpg' : '/images/hero-bg.jpg',
+            src: isLight ? '/images/city/baichuanxiang-12.jpg' : '/images/hero-bg.jpg',
             sizes: '100vw',
             widths: [640, 1280, 1920, 2560],
           });
